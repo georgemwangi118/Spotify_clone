@@ -1,6 +1,6 @@
 import React from "react";
 //import { CircularProgress } from "@mui/material";
-import Playlist from "../../components/Playlist/Playlist";
+import Playlists from "../../components/Playlists/Playlists";
 import playlistImg from "../../images/rock.jpg";
 
 import styles from "./styles.module.scss";
@@ -15,11 +15,11 @@ const Home = () => {
       <div className={styles.container}>
         <h1>Good afternoon</h1>
         <div className={styles.playlists_container}>
-          <Playlist playlists={playlists} />
+          <Playlists playlists={playlists} />
         </div>
         <h1>Just the hits</h1>
         <div className={styles.playlists_container}>
-          <Playlist playlists={playlists} />
+          <Playlists playlists={playlists} />
         </div>
       </div>
     </>

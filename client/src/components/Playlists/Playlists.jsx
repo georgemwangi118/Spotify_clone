@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./styles.module.scss";
 
-const Playlist = ({ Playlists }) => {
+const Playlists = ({ Playlists }) => {
   return (
     <>
       {Playlists.map((playlist) => (
@@ -26,4 +26,4 @@ const Playlist = ({ Playlists }) => {
   );
 };
 
-export default Playlist;
+export default Playlists;

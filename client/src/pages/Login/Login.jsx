@@ -1,13 +1,114 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import TextField from "../../components/Inputs/Textfield";
+import Checkbox from "../../components/Inputs/Checkbox";
+import Button from "../../components/Button/Button";
 import { FacebookRounded, Apple, Google } from "@mui/icons-material";
 import logo from "../../images/black_logo.svg";
-
 import Joi from "joi";
 import styles from "./styles.module.scss";
 
 const Login = () => {
-  return <div>Login</div>;
+  const [data, setData] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({});
+
+  const handleInputState = (name, value) => {
+    setData({ ...data, [name]: value });
+  };
+
+  const handleErrorState = (name, value) => {
+    value === ""
+      ? delete errors[name]
+      : setErrors({ ...errors, [name]: value });
+  };
+
+  const schema = {
+    email: Joi.string().email({ tlds: false }).required().label("Email"),
+    password: Joi.string().required().label("Password"),
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (Object.keys(errors).length === 0) {
+      console.log(data);
+    } else {
+      console.log("please fill out properly");
+    }
+  };
+  return (
+    <div className={styles.container}>
+      <div className={styles.logo_container}>
+        <Link to="/">
+          <img src={logo} alt="logo" />
+        </Link>
+      </div>
+      <main className={styles.main}>
+        <h1 className={styles.heading}>To continue, log in to Spotify.</h1>
+        <button
+          className={styles.contained_btn}
+          style={{ background: "#3b5998" }}
+        >
+          <FacebookRounded /> continue with facebook
+        </button>
+
+        <button className={styles.contained_btn} style={{ background: "#000" }}>
+          <Apple /> continue with apple
+        </button>
+
+        <button className={styles.outline_btn}>
+          <Google /> continue with google
+        </button>
+
+        <button className={styles.outline_btn}>
+          continue with phone number
+        </button>
+        <p className={styles.or_container}>or</p>
+        <form className={styles.form_container} onSubmit={handleSubmit}>
+          <div className={styles.input_container}>
+            <TextField
+              label="Enter your email"
+              placeholder="Enter your email"
+              name="email"
+              handleInputState={handleInputState}
+              schema={schema.email}
+              handleErrorState={handleErrorState}
+              value={data.email}
+              error={errors.email}
+              required={true}
+            />
+          </div>
+
+          <div className={styles.input_container}>
+            <TextField
+              label="Password"
+              placeholder="Password"
+              name="password"
+              handleInputState={handleInputState}
+              schema={schema.password}
+              handleErrorState={handleErrorState}
+              value={data.password}
+              error={errors.password}
+              type="password"
+              required={true}
+            />
+          </div>
+          <p className={styles.forgot_password}>Forgot your password</p>
+          <div className={styles.form_bottom}>
+            <Checkbox label="Remember me" />
+            <Button
+              type="submit"
+              label="LOG IN"
+              style={{ color: "white", background: "#15883e", width: "20rem" }}
+            />
+          </div>
+        </form>
+        <h1 className={styles.dont_have_account}>Don't have an account?</h1>
+        <Link to="/signup">
+          <button className={styles.outline_btn}>sign up for spotify</button>
+        </Link>
+      </main>
+    </div>
+  );
 };
 
 export default Login;
