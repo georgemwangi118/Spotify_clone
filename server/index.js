@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
-require("express-async-errors");
+//require("express-async-errors");
 
 //routes
 const userRoutes = require("./routes/users");
@@ -32,5 +32,5 @@ app.use("/api/songs/", songRoutes);
 app.use("/api/playlists/", playListRoutes);
 app.use("/api/", searchRoutes);
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
