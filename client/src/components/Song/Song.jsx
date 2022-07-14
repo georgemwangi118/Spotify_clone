@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Like from "../Like";
+import Like from "../Like/Like";
 import { IconButton } from "@mui/material";
 import { PlayArrow, MoreHoriz } from "@mui/icons-material";
 import styles from "./styles.module.scss";

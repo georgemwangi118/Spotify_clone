@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import TextField from "../Inputs/TextField";
+import TextField from "../Inputs/Textfield";
 import FileInput from "../Inputs/FileInput";
 import Button from "../Button/Button";
 import { IconButton } from "@mui/material";
