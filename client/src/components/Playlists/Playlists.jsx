@@ -2,10 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./styles.module.scss";
 
-const Playlists = ({ Playlists }) => {
+const Playlists = ({ playlists }) => {
   return (
     <>
-      {Playlists.map((playlist) => (
+      {playlists.map((playlist) => (
         <Link key={playlist._id} to={`/playlist/${playlist._id}`}>
           <div className={styles.playlist}>
             {playlist.img === "" ? (
