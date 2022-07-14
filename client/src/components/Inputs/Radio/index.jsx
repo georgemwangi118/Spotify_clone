@@ -1,7 +1,41 @@
 import React from "react";
+import { Radio, RadioGroup, FormControlLabel } from "@mui/material";
+import styles from "./styles.module.scss";
 
-const Radio = () => {
-  return <div>Holla</div>;
+const RadioInput = ({
+  name,
+  handleInputState,
+  label,
+  options,
+  required,
+  ...rest
+}) => {
+  const handleChange = ({ currentTarget: input }) => {
+    handleInputState(input.name, input.value);
+  };
+
+  return (
+    <div className={styles.container}>
+      <p>{label}</p>
+      <RadioGroup {...rest} row name={name} onChange={handleChange}>
+        {options.map((option, index) => (
+          <FormControlLabel
+            key={index}
+            value={option}
+            control={
+              <Radio
+                disableRipple
+                style={{ color: "#15883e", transform: "scale(1.2)" }}
+                required={required}
+              />
+            }
+            label={option}
+            className={styles.radio_input}
+          />
+        ))}
+      </RadioGroup>
+    </div>
+  );
 };
 
-export default Radio;
+export default RadioInput;
