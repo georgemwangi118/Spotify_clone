@@ -1,15 +1,30 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { createPlayList } from "../../redux/playListSlice/apiCalls";
+import { CircularProgress } from "@mui/material";
 import { Home, Search, LibraryMusic, Add } from "@mui/icons-material";
 import logo from "../../images/white_logo.svg";
 import likeImg from "../../images/like.jpg";
 import styles from "./styles.module.scss";
 
-const playlists = [
-  { _id: 1, img: "", name: "Today's Top Songs", desc: "By Georges" },
-];
-
 const Sidebar = () => {
+  const { playlists, getPlayListProgress, createPlayListProgress } =
+    useSelector((state) => state.playlists);
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  const handleCreatePlayList = () => {
+    const data = {
+      name: "My Playlist #" + (playlists.length + 1),
+      user: user._id,
+      desc: "By " + user.name,
+      songs: [],
+      img: "",
+    };
+    createPlayList(data, dispatch);
+  };
+
   return (
     <div className={styles.container}>
       <img className={styles.logo_img} src={logo} alt="logo" />
@@ -37,7 +52,10 @@ const Sidebar = () => {
         <LibraryMusic />
         <span>Your Library</span>
       </NavLink>
-      <div className={styles.create_playlist_btn}>
+      <div
+        className={styles.create_playlist_btn}
+        onClick={handleCreatePlayList}
+      >
         <Add />
         <span>Create Playlist</span>
       </div>
@@ -50,16 +68,24 @@ const Sidebar = () => {
         <span>Liked Songs</span>
       </NavLink>
       <div className={styles.underline}></div>
-      {playlists.map((playlist) => (
-        <NavLink
-          key={playlist._id}
-          to={`/playlist/${playlist._id}`}
-          className={styles.playlist_link}
-          activeClassName={styles.active_link}
-        >
-          {playlists.name}
-        </NavLink>
-      ))}
+      {getPlayListProgress || createPlayListProgress ? (
+        <div className={styles.progress_container}>
+          <CircularProgress style={{ color: "#1ed760" }} size="3rem" />
+        </div>
+      ) : (
+        <>
+          {playlists.map((playlist) => (
+            <NavLink
+              key={playlist._id}
+              to={`/playlist/${playlist._id}`}
+              className={styles.playlist_link}
+              activeClassName={styles.active_link}
+            >
+              {playlists.name}
+            </NavLink>
+          ))}
+        </>
+      )}
     </div>
   );
 };

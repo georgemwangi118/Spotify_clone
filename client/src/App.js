@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Switch, Route, Redirect, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { getUser } from "./redux/userSlice/apiCalls";
+import { getPlayLists } from "./redux/playListSlice/apiCalls";
 import PrivateRoute from "./PrivateRoute";
 import Main from "./pages/Main/Main";
 import Navbar from "./components/Navbar/Navbar";
@@ -16,8 +19,26 @@ import LikedSongs from "./pages/LikedSongs/LikedSongs";
 import Profile from "./pages/Profile/Profile";
 
 function App() {
-  const user = true;
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth);
   const location = useLocation();
+  const { currentSong } = useSelector((state) => state.audioPlayer);
+
+  useEffect(() => {
+    let token = null;
+    const root = JSON.parse(window.localStorage.getItem("persist:root"));
+
+    if (root) {
+      const { auth } = root;
+      const { user } = JSON.parse(auth);
+      if (user) token = user.token;
+    }
+
+    if (user && token) {
+      getUser(user._id, dispatch);
+      getPlayLists(dispatch);
+    }
+  }, [dispatch, user]);
 
   return (
     <>
@@ -29,7 +50,7 @@ function App() {
           <>
             <Navbar />
             <Sidebar />
-            <AudioPlayer />
+            {currentSong && <AudioPlayer />}
           </>
         )}
       <Switch>

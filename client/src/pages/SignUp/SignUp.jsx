@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 import Joi from "joi";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import passwordComplexity from "joi-password-complexity";
 import TextField from "../../components/Inputs/Textfield";
 import Select from "../../components/Inputs/Select";
@@ -38,6 +40,9 @@ const SignUp = () => {
     gender: "",
   });
   const [errors, setErrors] = useState({});
+  const [isFetching, setIsFetching] = useState(false);
+
+  const history = useHistory();
 
   const handleInputState = (name, value) => {
     setData((data) => ({ ...data, [name]: value }));
@@ -58,7 +63,22 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (Object.keys(errors).length === 0) {
-      console.log(data);
+      try {
+        setIsFetching(true);
+        const url = process.env.REACT_APP_API_URL + "/users";
+        await axios.post(url, data);
+        setIsFetching(false);
+        toast.success("Account created successfully");
+        history.push("/login");
+      } catch (err) {
+        setIsFetching(false);
+        if (err.res && err.res.status >= 400 && err.res.status < 500) {
+          toast.error(err.res.data);
+        } else {
+          console.log(err);
+          toast.error("Something went wrong!");
+        }
+      }
     } else {
       console.log("please fill out properly");
     }
@@ -75,6 +95,7 @@ const SignUp = () => {
         style={{ background: "#1877f2", color: "white" }}
       />
       <p className={styles.or_container}>or</p>
+
       <form onSubmit={handleSubmit} className={styles.form_container}>
         <h2 className={styles.form_heading}>Sign up with your email address</h2>
         <div className={styles.input_container}>
@@ -178,7 +199,7 @@ const SignUp = () => {
           <a href="/#">Spotify's Privacy Policy.</a>
         </p>
         <div className={styles.submit_btn_wrapper}>
-          <Button label="Sign Up" type="submit" />
+          <Button label="Sign Up" type="submit" isFetching={isFetching} />
         </div>
         <p className={styles.terms_condition} style={{ fontSize: "1.6rem" }}>
           Have an account? <Link to="/login"> Log in.</Link>

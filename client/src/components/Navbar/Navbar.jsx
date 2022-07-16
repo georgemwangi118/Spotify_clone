@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/authSlice/auth";
+import { setCurrentSong } from "../../redux/audioPlayer/audioPlayer";
 import { ClickAwayListener } from "@mui/material";
 import {
   ArrowDropDown,
@@ -16,7 +19,15 @@ import styles from "./styles.module.scss";
 
 const Navbar = () => {
   const [menu, setMenu] = useState(false);
+  const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const history = useHistory();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    dispatch(setCurrentSong(null));
+    window.location = "/login";
+  };
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -34,7 +45,7 @@ const Navbar = () => {
           onClick={() => setMenu(!menu)}
         >
           <AccountCircle />
-          <p>George</p>
+          <p>{user && user.name}</p>
           {menu ? <ArrowDropUp /> : <ArrowDropDown />}
         </div>
       </div>
@@ -51,7 +62,7 @@ const Navbar = () => {
               <p>Settings</p>
               <Settings />
             </div>
-            <div className={styles.options}>
+            <div className={styles.options} onClick={handleLogout}>
               <p>Logout</p>
               <Logout />
             </div>
