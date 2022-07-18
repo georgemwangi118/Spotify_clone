@@ -1,25 +1,30 @@
 import React, { Fragment, useState } from "react";
+import axiosInstance from "../../redux/axiosInstance";
 import Song from "../../components/Song/Song";
 import Playlists from "../../components/Playlists/Playlists";
-import { IconButton } from "@mui/material";
-import peaches from "../../images/music.png";
-import playlistImg from "../../images/rock.jpg";
+import { IconButton, CircularProgress } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import styles from "./styles.module.scss";
 
-const playlists = [
-  { _id: 1, img: playlistImg, name: "Today's Top Songs", desc: "By George" },
-];
-
-const songs = [
-  { _id: 1, img: peaches, name: "Today's Top Songs", artist: "By George" },
-];
-
 const Search = () => {
   const [search, setSearch] = useState("");
+  const [results, setResults] = useState({});
+  const [isFetching, setIsFetching] = useState(false);
+
   const handleSearch = async ({ currentTarget: input }) => {
     setSearch(input.value);
+    setResults({});
+    try {
+      setIsFetching(true);
+      const url = process.env.REACT_APP_API_URL + `/?search=${input.value}`;
+      const { data } = await axiosInstance.get(url);
+      setResults(data);
+      setIsFetching(false);
+    } catch (error) {
+      console.log(error);
+      setIsFetching(false);
+    }
   };
 
   return (
@@ -38,18 +43,29 @@ const Search = () => {
           <ClearIcon />
         </IconButton>
       </div>
-      <div className={styles.results_container}>
-        <div className={styles.songs_container}>
-          {songs.map((song) => (
-            <Fragment key={song._id}>
-              <Song song={song} />
-            </Fragment>
-          ))}
+      {isFetching && (
+        <div className={styles.progress_container}>
+          <CircularProgress style={{ color: "#1ed760" }} size="5rem" />
         </div>
-        <div className={styles.playlists_container}>
-          <Playlists playlists={playlists} />
+      )}
+      {Object.keys(results).length !== 0 && (
+        <div className={styles.results_container}>
+          {results.songs.length !== 0 && (
+            <div className={styles.songs_container}>
+              {results.songs.map((song) => (
+                <Fragment key={song._id}>
+                  <Song song={song} />
+                </Fragment>
+              ))}
+            </div>
+          )}
+          {results.playlists.length !== 0 && (
+            <div className={styles.playlists_container}>
+              <Playlists playlists={results.playlists} />
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 };

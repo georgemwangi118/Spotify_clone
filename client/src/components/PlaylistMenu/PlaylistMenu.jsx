@@ -1,13 +1,20 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addSongToPlaylist } from "../../redux/playListSlice/apiCalls";
 import styles from "./styles.module.scss";
 import { ClickAwayListener } from "@mui/material";
 import { ArrowRight } from "@mui/icons-material";
 
-const playlists = [
-  { _id: 1, img: "", name: "Today's Top Songs", desc: "By George" },
-];
+const PlaylistMenu = ({ playlist, song, handleRemoveSong, closeMenu }) => {
+  const { playlists } = useSelector((state) => state.playlists);
+  const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
-const PlaylistMenu = ({ closeMenu }) => {
+  const handleAddToPlaylist = (playlistId, songId) => {
+    const payload = { playlistId, songId };
+    addSongToPlaylist(payload, dispatch);
+  };
+
   return (
     <ClickAwayListener onClick={closeMenu}>
       <div className={styles.menu} onClick={closeMenu}>
@@ -17,13 +24,24 @@ const PlaylistMenu = ({ closeMenu }) => {
             <ArrowRight />
             <div className={styles.playlists}>
               {playlists.map((playlist) => (
-                <div className={styles.option} key={playlist._id}>
+                <div
+                  className={styles.option}
+                  key={playlist._id}
+                  onClick={() => handleAddToPlaylist(playlist._id, song._id)}
+                >
                   <p>{playlist.name}</p>
                 </div>
               ))}
             </div>
           </>
         </div>
+        {playlist && playlist.user === user._id && (
+          <div className={styles.option}>
+            <p onClick={() => handleRemoveSong(song._id)}>
+              Remove from Playlist
+            </p>
+          </div>
+        )}
         <div className={styles.option}>
           <p>Go to artist</p>
         </div>

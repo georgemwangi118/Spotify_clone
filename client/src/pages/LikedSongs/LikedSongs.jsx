@@ -1,15 +1,34 @@
-import { Fragment } from "react";
+import { Fragment, useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import axiosInstance from "../../redux/axiosInstance";
 import Song from "../../components/Song/Song";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { CircularProgress } from "@mui/material";
 import styles from "./styles.module.scss";
 import likeImg from "../../images/like.jpg";
-import peaches from "../../images/music.png";
-
-const songs = [
-  { _id: 1, img: peaches, name: "Peaches", artist: "Justin Bieber" },
-];
 
 const LikedSongs = () => {
+  const [songs, setSongs] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const { user } = useSelector((state) => state.user);
+
+  const getLikedSongs = async () => {
+    try {
+      setIsFetching(true);
+      const url = process.env.REACT_APP_API_URL + `/songs/like`;
+      const { data } = await axiosInstance.get(url);
+      setSongs(data.data);
+      setIsFetching(false);
+    } catch (error) {
+      console.log(error);
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    getLikedSongs();
+  }, []);
+
   return (
     <div className={styles.container}>
       <div className={styles.head}>
@@ -18,7 +37,7 @@ const LikedSongs = () => {
         <div className={styles.playlist_info}>
           <p>Playlist</p>
           <h1>Liked Songs</h1>
-          <span>By George</span>
+          <span>By {user && user.name}</span>
         </div>
       </div>
       <div className={styles.body}>
@@ -34,12 +53,21 @@ const LikedSongs = () => {
             <AccessTimeIcon />
           </div>
         </div>
-
-        {songs.map((song) => (
-          <Fragment key={song._id}>
-            <Song song={song} />
-          </Fragment>
-        ))}
+        {isFetching ? (
+          <div className={styles.progress_container}>
+            <CircularProgress style={{ color: "#1ed760" }} size="5rem" />
+          </div>
+        ) : (
+          <>
+            {songs.map((song) => (
+              <Fragment key={song._id}>
+                {user.LikedSongs.indexOf(song._id) !== -1 && (
+                  <Song song={song} />
+                )}
+              </Fragment>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

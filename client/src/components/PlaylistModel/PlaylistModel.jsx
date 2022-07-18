@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import TextField from "../Inputs/Textfield";
 import FileInput from "../Inputs/FileInput";
 import Button from "../Button/Button";
+import axiosInstance from "../../redux/axiosInstance";
+import { toast } from "react-toastify";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import defaultImg from "../../images/music.png";
@@ -14,6 +16,8 @@ const PlaylistModel = ({ closeModel, playlist }) => {
     img: "",
   });
 
+  const [isFetching, setIsFetching] = useState(false);
+
   useEffect(() => {
     setData({ name: playlist.name, desc: playlist.desc, img: playlist.img });
   }, [playlist]);
@@ -22,9 +26,20 @@ const PlaylistModel = ({ closeModel, playlist }) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(data);
+    try {
+      setIsFetching(true);
+      const url =
+        process.env.REACT_APP_API_URL + `/playlists/edit/${playlist._id}`;
+      const { data: res } = await axiosInstance.put(url, data);
+      toast.success(res.message);
+      setIsFetching(false);
+      window.location.reload();
+    } catch (error) {
+      setIsFetching(false);
+      console.log(error);
+    }
   };
 
   return (
@@ -62,6 +77,7 @@ const PlaylistModel = ({ closeModel, playlist }) => {
         <Button
           label="Submit"
           onClick={handleSubmit}
+          isFetching={isFetching}
           style={{
             position: "absolute",
             bottom: "0",

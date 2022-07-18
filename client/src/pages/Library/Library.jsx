@@ -1,13 +1,12 @@
+import React from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Playlists from "../../components/Playlists/Playlists";
-import playlistImg from "../../images/rock.jpg";
 import styles from "./styles.module.scss";
 
-const playlists = [
-  { _id: 1, img: playlistImg, name: "Today's Top Songs", desc: "By George" },
-];
-
 const Library = () => {
+  const { playlists } = useSelector((state) => state.playlists);
+  const { user } = useSelector((state) => state.user);
   return (
     <div className={styles.container}>
       <h1>Playlists</h1>
@@ -15,7 +14,7 @@ const Library = () => {
         <Link to="/collection/tracks">
           <div className={styles.liked_songs}>
             <h1>Liked Songs</h1>
-            <p>1 Liked Songs</p>
+            <p>{user.likedSongs.length} Liked Songs</p>
           </div>
         </Link>
         <Playlists playlists={playlists} />

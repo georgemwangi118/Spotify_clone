@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "../../redux/userSlice/apiCalls";
 import Joi from "joi";
 import TextField from "../../components/Inputs/Textfield";
 import Select from "../../components/Inputs/Select";
@@ -33,6 +36,9 @@ const Profile = () => {
     gender: "",
   });
   const [errors, setErrors] = useState({});
+  const { user, updateUserProgress } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   const handleInputState = (name, value) => {
     setData((data) => ({ ...data, [name]: value }));
@@ -48,10 +54,25 @@ const Profile = () => {
     name: Joi.string().min(5).max(10).required().label("Name"),
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(data);
+    const payload = { data, id: user._id };
+    const res = await updateUser(payload, dispatch);
+    res && history.push("/home");
   };
+
+  useEffect(() => {
+    if (user) {
+      const dk = {
+        name: user.name,
+        month: user.month,
+        year: user.year,
+        date: user.date,
+        gender: user.gender,
+      };
+      setData(dk);
+    }
+  }, [user]);
 
   return (
     <div className={styles.container}>
@@ -61,10 +82,10 @@ const Profile = () => {
           <TextField
             label="What's your email?"
             placeholder="Enter your email"
-            name="email"
-            handleInputState={handleInputState}
-            value={data.email}
+            value={user ? user.email : ""}
             required={true}
+            disabled={true}
+            style={{ color: "white" }}
           />
         </div>
         <div className={styles.input_container}>
@@ -127,7 +148,11 @@ const Profile = () => {
           />
         </div>
         <div className={styles.submit_btn_wrapper}>
-          <Button label="Update" type="submit" />
+          <Button
+            label="Update"
+            type="submit"
+            isFetching={updateUserProgress}
+          />
         </div>
       </form>
     </div>
